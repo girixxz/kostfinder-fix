@@ -85,7 +85,7 @@ Create MongoDB Atlas Account:
 6. Get connection string
 
 Connection String Format:
-mongodb+srv://username:password@cluster.mongodb.net/kostfinder
+-
 
 ================================================================================
 ⚙️ STEP 4: ENVIRONMENT VARIABLES
@@ -94,7 +94,7 @@ mongodb+srv://username:password@cluster.mongodb.net/kostfinder
 Create .env.local file in root directory:
 
 # MongoDB
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/kostfinder
+MONGODB_URI=link
 
 # JWT Secret (generate random string)
 JWT_SECRET=your-super-secret-jwt-key-here-make-it-long-and-random
