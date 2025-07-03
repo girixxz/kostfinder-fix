@@ -46,12 +46,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (response.ok) {
         const userData = await response.json()
         setUser(userData)
+
+        // Set cookie for middleware
+        document.cookie = `auth-token=${token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`
       } else {
         localStorage.removeItem("token")
+        document.cookie = "auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
       }
     } catch (error) {
       console.error("Auth check failed:", error)
       localStorage.removeItem("token")
+      document.cookie = "auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
     } finally {
       setLoading(false)
     }
@@ -71,6 +76,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { token, user } = await response.json()
         localStorage.setItem("token", token)
         setUser(user)
+
+        // Set cookie for middleware
+        document.cookie = `auth-token=${token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`
+
         return true
       }
       return false
@@ -94,6 +103,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { token, user } = await response.json()
         localStorage.setItem("token", token)
         setUser(user)
+
+        // Set cookie for middleware
+        document.cookie = `auth-token=${token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`
+
         return true
       }
       return false
@@ -125,6 +138,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Clear client-side data
       localStorage.removeItem("token")
+      document.cookie = "auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
       setUser(null)
 
       // Small delay for better UX
@@ -137,6 +151,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error("Logout error:", error)
       // Force logout even if there's an error
       localStorage.removeItem("token")
+      document.cookie = "auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
       setUser(null)
       setLoading(false)
       window.location.href = "/"

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { useAuth } from "@/components/auth-provider"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useToast } from "@/hooks/use-toast"
-import { Heart, Star, MapPin, Phone, User, MessageSquare, ExternalLink } from "lucide-react"
+import { Heart, Star, MapPin, Phone, User, MessageSquare, ExternalLink, Lock, LogIn } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import dynamic from "next/dynamic"
@@ -56,7 +56,8 @@ interface Rating {
 
 export default function KostDetailPage() {
   const params = useParams()
-  const { user } = useAuth()
+  const router = useRouter()
+  const { user, loading: authLoading } = useAuth()
   const { toast } = useToast()
 
   const [kost, setKost] = useState<Kost | null>(null)
@@ -71,13 +72,24 @@ export default function KostDetailPage() {
   })
   const [submittingReview, setSubmittingReview] = useState(false)
 
+  // Redirect jika user belum login setelah auth loading selesai
   useEffect(() => {
-    if (params.id) {
+    if (!authLoading && !user) {
+      toast({
+        title: "Login Required",
+        description: "Silakan login terlebih dahulu untuk melihat detail kost",
+        variant: "destructive",
+      })
+      router.push("/login")
+      return
+    }
+  }, [user, authLoading, router, toast])
+
+  useEffect(() => {
+    if (params.id && user) {
       fetchKostDetail()
-      if (user) {
-        checkFavoriteStatus()
-        checkRatingStatus()
-      }
+      checkFavoriteStatus()
+      checkRatingStatus()
     }
   }, [params.id, user])
 
@@ -241,6 +253,50 @@ export default function KostDetailPage() {
   const getWhatsAppLink = (phone: string, kostTitle: string) => {
     const message = `Halo, saya tertarik dengan kost "${kostTitle}". Bisakah saya mendapat informasi lebih lanjut?`
     return `https://wa.me/${phone.replace(/\D/g, "")}?text=${encodeURIComponent(message)}`
+  }
+
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="flex items-center justify-center h-96">
+          <LoadingSpinner size="lg" text="Checking authentication..." />
+        </div>
+      </div>
+    )
+  }
+
+  // Show login required message if not authenticated
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Card className="max-w-md mx-auto">
+            <CardContent className="text-center py-12">
+              <Lock className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Login Required</h2>
+              <p className="text-gray-600 mb-6">Silakan login terlebih dahulu untuk melihat detail kost</p>
+              <div className="space-y-3">
+                <Button asChild className="w-full">
+                  <Link href="/login">
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Login Sekarang
+                  </Link>
+                </Button>
+                <Button variant="outline" asChild className="w-full bg-transparent">
+                  <Link href="/register">Daftar Akun Baru</Link>
+                </Button>
+                <Button variant="ghost" asChild className="w-full">
+                  <Link href="/search">Kembali ke Pencarian</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
   }
 
   if (loading) {
