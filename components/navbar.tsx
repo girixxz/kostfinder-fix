@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { User, Heart, Settings, LogOut } from "lucide-react"
+import { User, Heart, Settings, LogOut, Menu, X } from "lucide-react"
 import { useState } from "react"
 import { LogoutDialog } from "./logout-dialog"
 
@@ -18,6 +18,7 @@ export function Navbar() {
   const { user, logout, loading } = useAuth()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [showLogoutDialog, setShowLogoutDialog] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const handleLogout = async () => {
     if (isLoggingOut) return // Prevent double-clicking
@@ -33,15 +34,25 @@ export function Navbar() {
     }
   }
 
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false)
+  }
+
   return (
     <nav className="bg-white shadow-sm border-b sticky top-0 z-40 backdrop-blur-sm bg-white/95">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link href="/" className="flex items-center space-x-2 transition-transform duration-200 hover:scale-105">
+          {/* Logo */}
+          <Link
+            href="/"
+            className="flex items-center space-x-2 transition-transform duration-200 hover:scale-105"
+            onClick={closeMobileMenu}
+          >
             <div className="bg-black text-white w-8 h-8 rounded flex items-center justify-center font-bold">K</div>
             <span className="text-xl font-bold text-gray-900">KostFinder</span>
           </Link>
 
+          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <Link href="/search" className="text-gray-700 hover:text-gray-900 transition-colors duration-200">
               Cari Kost
@@ -54,7 +65,8 @@ export function Navbar() {
             </Link>
           </div>
 
-          <div className="flex items-center space-x-4">
+          {/* Desktop Auth Section */}
+          <div className="hidden md:flex items-center space-x-4">
             {loading ? (
               <div className="animate-pulse">
                 <div className="h-8 w-20 bg-gray-200 rounded"></div>
@@ -68,6 +80,12 @@ export function Navbar() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard" className="flex items-center transition-colors duration-200">
+                      <User className="w-4 h-4 mr-2" />
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/favorites" className="flex items-center transition-colors duration-200">
                       <Heart className="w-4 h-4 mr-2" />
@@ -103,8 +121,120 @@ export function Navbar() {
               </div>
             )}
           </div>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden">
+            <Button variant="ghost" size="sm" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2">
+              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </Button>
+          </div>
         </div>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden border-t border-gray-200 bg-white">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              {/* Navigation Links */}
+              <Link
+                href="/search"
+                className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors duration-200"
+                onClick={closeMobileMenu}
+              >
+                Cari Kost
+              </Link>
+              <Link
+                href="/#about"
+                className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors duration-200"
+                onClick={closeMobileMenu}
+              >
+                About
+              </Link>
+              <Link
+                href="/#contact"
+                className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors duration-200"
+                onClick={closeMobileMenu}
+              >
+                Contact
+              </Link>
+
+              {/* Divider */}
+              <div className="border-t border-gray-200 my-2"></div>
+
+              {/* Auth Section */}
+              {loading ? (
+                <div className="px-3 py-2">
+                  <div className="animate-pulse">
+                    <div className="h-8 w-20 bg-gray-200 rounded"></div>
+                  </div>
+                </div>
+              ) : user ? (
+                <div className="space-y-1">
+                  {/* User Info */}
+                  <div className="px-3 py-2 text-sm text-gray-500 border-b border-gray-100">
+                    Logged in as <span className="font-medium text-gray-900">{user.name}</span>
+                  </div>
+
+                  {/* User Menu Items */}
+                  <Link
+                    href="/dashboard"
+                    className="flex items-center px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors duration-200"
+                    onClick={closeMobileMenu}
+                  >
+                    <User className="w-4 h-4 mr-3" />
+                    Dashboard
+                  </Link>
+                  <Link
+                    href="/favorites"
+                    className="flex items-center px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors duration-200"
+                    onClick={closeMobileMenu}
+                  >
+                    <Heart className="w-4 h-4 mr-3" />
+                    Favorit
+                  </Link>
+                  {user.role === "admin" && (
+                    <Link
+                      href="/admin"
+                      className="flex items-center px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors duration-200"
+                      onClick={closeMobileMenu}
+                    >
+                      <Settings className="w-4 h-4 mr-3" />
+                      Admin Panel
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => {
+                      setShowLogoutDialog(true)
+                      closeMobileMenu()
+                    }}
+                    className="flex items-center w-full px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors duration-200"
+                  >
+                    <LogOut className="w-4 h-4 mr-3" />
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-2 px-3 py-2">
+                  <Link
+                    href="/login"
+                    className="block w-full text-center px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md border border-gray-300 transition-colors duration-200"
+                    onClick={closeMobileMenu}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="block w-full text-center px-4 py-2 bg-black text-white hover:bg-gray-800 rounded-md transition-colors duration-200"
+                    onClick={closeMobileMenu}
+                  >
+                    Register
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
+
       <LogoutDialog
         open={showLogoutDialog}
         onOpenChange={setShowLogoutDialog}

@@ -1,106 +1,17 @@
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
-import { KostCard } from "@/components/kost-card"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ScrollToTop } from "@/components/scroll-to-top"
 import { FadeIn } from "@/components/fade-in"
 import { PageTransition } from "@/components/page-transition"
+import { FeaturedKosts } from "@/components/featured-kosts"
+import { TopRatedKosts } from "@/components/top-rated-kosts"
 import Link from "next/link"
 import { Search, MapPin, Shield, Star, Clock } from "lucide-react"
-import dbConnect from "@/lib/mongodb"
-import Kost from "@/models/Kost"
-import Rating from "@/models/Rating"
 
-// Server component to fetch real data
-async function getFeaturedKosts() {
-  try {
-    await dbConnect()
-
-    // Get latest 6 kosts
-    const kosts = await Kost.find({}).sort({ createdAt: -1 }).limit(6).lean()
-
-    // Get ratings for each kost
-    const kostsWithRatings = await Promise.all(
-      kosts.map(async (kost) => {
-        const ratings = await Rating.find({ kost: kost._id }).lean()
-        const averageRating = ratings.length > 0 ? ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length : 0
-
-        return {
-          _id: kost._id.toString(),
-          title: kost.title,
-          location: kost.location,
-          price: kost.price,
-          type: kost.type,
-          images: kost.images,
-          facilities: kost.facilities,
-          averageRating: Math.round(averageRating * 10) / 10,
-        }
-      }),
-    )
-
-    return kostsWithRatings
-  } catch (error) {
-    console.error("Error fetching kosts:", error)
-    return []
-  }
-}
-
-async function getTopRatedKosts() {
-  try {
-    await dbConnect()
-
-    // Get kosts with ratings
-    const ratings = await Rating.aggregate([
-      {
-        $group: {
-          _id: "$kost",
-          averageRating: { $avg: "$rating" },
-          totalReviews: { $sum: 1 },
-        },
-      },
-      {
-        $match: {
-          averageRating: { $gte: 4 },
-          totalReviews: { $gte: 2 },
-        },
-      },
-      {
-        $sort: { averageRating: -1 },
-      },
-      {
-        $limit: 4,
-      },
-    ])
-
-    const topRatedKosts = await Promise.all(
-      ratings.map(async (rating) => {
-        const kost = await Kost.findById(rating._id).lean()
-        if (!kost) return null
-
-        return {
-          _id: kost._id.toString(),
-          title: kost.title,
-          location: kost.location,
-          price: kost.price,
-          type: kost.type,
-          images: kost.images,
-          facilities: kost.facilities,
-          averageRating: Math.round(rating.averageRating * 10) / 10,
-        }
-      }),
-    )
-
-    return topRatedKosts.filter(Boolean)
-  } catch (error) {
-    console.error("Error fetching top rated kosts:", error)
-    return []
-  }
-}
-
-export default async function HomePage() {
-  const [featuredKosts, topRatedKosts] = await Promise.all([getFeaturedKosts(), getTopRatedKosts()])
-
+// Convert to Client Component untuk real-time data
+export default function HomePage() {
   return (
     <PageTransition>
       <div className="min-h-screen">
@@ -132,58 +43,11 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* Featured Kosts with real data */}
-        <section className="py-16 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <FadeIn>
-              <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">Kost Terbaru</h2>
-                <p className="text-gray-600">Pilihan kost terbaru yang mungkin Anda sukai</p>
-              </div>
-            </FadeIn>
+        {/* Featured Kosts - Now using Client Component */}
+        <FeaturedKosts />
 
-            {featuredKosts.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {featuredKosts.map((kost, index) => (
-                  <FadeIn key={kost._id} delay={index * 0.1}>
-                    <div className="transform transition-all duration-300 hover:scale-105">
-                      <KostCard kost={kost} />
-                    </div>
-                  </FadeIn>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-gray-500 mb-4">Belum ada kost yang tersedia</p>
-                <Button asChild>
-                  <Link href="/admin">Tambah Kost Pertama</Link>
-                </Button>
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* Top Rated Kosts with real data */}
-        {topRatedKosts.length > 0 && (
-          <section className="py-16 bg-gray-50">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <FadeIn>
-                <div className="text-center mb-12">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-4">Kost Rating Tertinggi</h2>
-                  <p className="text-gray-600">Kost dengan rating tertinggi dari penghuni</p>
-                </div>
-              </FadeIn>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {topRatedKosts.map((kost) => (
-                  <FadeIn key={kost._id}>
-                    <KostCard kost={kost} />
-                  </FadeIn>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
+        {/* Top Rated Kosts - Now using Client Component */}
+        <TopRatedKosts />
 
         {/* About Section */}
         <section id="about" className="py-16 bg-white">
