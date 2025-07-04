@@ -64,14 +64,14 @@ export default function LoginPage() {
             <div className="bg-black text-white w-10 h-10 rounded flex items-center justify-center font-bold text-lg">
               K
             </div>
-            <span className="text-2xl font-bold text-gray-900">KostFinder</span>
+            <span className="text-2xl font-bold text-gray-900">Kost<span className="text-yellow-600">Finder</span></span>
           </Link>
         </div>
 
         {/* Login Card */}
         <Card className="shadow-lg">
           <CardHeader className="text-center pb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+            <h1 className="text-2xl font-bold text-yellow-600 mb-2">Welcome Back</h1>
             <p className="text-gray-600">Sign in to your account to continue</p>
           </CardHeader>
 
@@ -131,7 +131,7 @@ export default function LoginPage() {
                 </Link>
               </div>
 
-              <Button type="submit" className="w-full bg-black hover:bg-gray-800 text-white py-3" disabled={loading}>
+              <Button type="submit" className="w-full bg-yellow-600 hover:bg-yellow-800 text-white py-3" disabled={loading}>
                 {loading ? "Signing In..." : "Sign In"}
               </Button>
             </form>
@@ -139,7 +139,7 @@ export default function LoginPage() {
             <div className="mt-6 text-center">
               <p className="text-gray-600">
                 {"Don't have an account? "}
-                <Link href="/register" className="text-black font-medium hover:underline">
+                <Link href="/register" className="text-yellow-600 font-medium hover:underline">
                   Sign up
                 </Link>
               </p>

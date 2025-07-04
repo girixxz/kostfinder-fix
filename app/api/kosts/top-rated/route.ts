@@ -8,7 +8,7 @@ export async function GET() {
   try {
     await dbConnect()
 
-    // Get kosts with ratings
+    // Aggregate ratings: hitung total review & average rating
     const ratings = await Rating.aggregate([
       {
         $group: {
@@ -24,10 +24,10 @@ export async function GET() {
         },
       },
       {
-        $sort: { averageRating: -1 },
-      },
-      {
-        $limit: 4,
+        $sort: {
+          totalReviews: -1,       // Prioritaskan yang paling banyak review
+          averageRating: -1,      // Jika sama, prioritaskan rating tinggi
+        },
       },
     ])
 
@@ -45,19 +45,18 @@ export async function GET() {
           images: kost.images,
           facilities: kost.facilities,
           averageRating: Math.round(rating.averageRating * 10) / 10,
+          totalReviews: rating.totalReviews,
         }
-      }),
+      })
     )
 
     const validKosts = topRatedKosts.filter(Boolean)
 
-    // Set cache headers for fresh data
     const response = NextResponse.json({
       kosts: validKosts,
       timestamp: new Date().toISOString(),
     })
 
-    // Disable caching for real-time data
     response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
     response.headers.set("Pragma", "no-cache")
     response.headers.set("Expires", "0")
@@ -70,7 +69,7 @@ export async function GET() {
         error: "Failed to fetch top rated kosts",
         kosts: [],
       },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

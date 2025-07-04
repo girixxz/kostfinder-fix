@@ -74,14 +74,14 @@ export default function RegisterPage() {
             <div className="bg-black text-white w-10 h-10 rounded flex items-center justify-center font-bold text-lg">
               K
             </div>
-            <span className="text-2xl font-bold text-gray-900">KostFinder</span>
+            <span className="text-2xl font-bold text-gray-900">Kost<span className="text-yellow-600">Finder</span></span>
           </Link>
         </div>
 
         {/* Register Card */}
         <Card className="shadow-lg">
           <CardHeader className="text-center pb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Create Account</h1>
+            <h1 className="text-2xl font-bold text-yellow-600 mb-2">Create Account</h1>
             <p className="text-gray-600">Sign up to start finding your perfect kost</p>
           </CardHeader>
 
@@ -155,7 +155,7 @@ export default function RegisterPage() {
                 />
               </div>
 
-              <Button type="submit" className="w-full bg-black hover:bg-gray-800 text-white py-3" disabled={loading}>
+              <Button type="submit" className="w-full bg-yellow-600 hover:bg-yellow-800 text-white py-3" disabled={loading}>
                 {loading ? "Creating Account..." : "Sign Up"}
               </Button>
             </form>
@@ -163,7 +163,7 @@ export default function RegisterPage() {
             <div className="mt-6 text-center">
               <p className="text-gray-600">
                 Already have an account?{" "}
-                <Link href="/login" className="text-black font-medium hover:underline">
+                <Link href="/login" className="text-yellow-600 font-medium hover:underline">
                   Sign in
                 </Link>
               </p>

@@ -47,13 +47,13 @@ export function Footer() {
             <ul className="space-y-2 text-gray-400">
               <li>Email: info@kostfinder.com</li>
               <li>Phone: +62 812-3456-7890</li>
-              <li>Address: Jakarta, Indonesia</li>
+              <li>Address: Yogyakarta, Indonesia</li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 KostFinder. All rights reserved.</p>
+          <p>&copy; 2025 KostFinder. All rights reserved.</p>
         </div>
       </div>
     </footer>

@@ -21,15 +21,13 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const handleLogout = async () => {
-    if (isLoggingOut) return // Prevent double-clicking
-
+    if (isLoggingOut) return
     setIsLoggingOut(true)
 
     try {
       await logout()
     } catch (error) {
       console.error("Logout failed:", error)
-      // Force logout even if there's an error
       setIsLoggingOut(false)
     }
   }
@@ -49,7 +47,10 @@ export function Navbar() {
             onClick={closeMobileMenu}
           >
             <div className="bg-black text-white w-8 h-8 rounded flex items-center justify-center font-bold">K</div>
-            <span className="text-xl font-bold text-gray-900">KostFinder</span>
+            <span className="text-xl font-bold">
+              <span className="text-gray-900">Kost</span>
+              <span className="text-yellow-600">Finder</span>
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -115,7 +116,10 @@ export function Navbar() {
                 <Button variant="ghost" asChild className="transition-colors duration-200">
                   <Link href="/login">Login</Link>
                 </Button>
-                <Button asChild className="transition-all duration-200 hover:scale-105">
+                <Button
+                  asChild
+                  className="bg-[#B69A2A] text-white hover:bg-[#a68924] transition-all duration-200 hover:scale-105"
+                >
                   <Link href="/register">Register</Link>
                 </Button>
               </div>
@@ -134,7 +138,6 @@ export function Navbar() {
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-gray-200 bg-white">
             <div className="px-2 pt-2 pb-3 space-y-1">
-              {/* Navigation Links */}
               <Link
                 href="/search"
                 className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors duration-200"
@@ -157,10 +160,8 @@ export function Navbar() {
                 Contact
               </Link>
 
-              {/* Divider */}
               <div className="border-t border-gray-200 my-2"></div>
 
-              {/* Auth Section */}
               {loading ? (
                 <div className="px-3 py-2">
                   <div className="animate-pulse">
@@ -169,12 +170,10 @@ export function Navbar() {
                 </div>
               ) : user ? (
                 <div className="space-y-1">
-                  {/* User Info */}
                   <div className="px-3 py-2 text-sm text-gray-500 border-b border-gray-100">
                     Logged in as <span className="font-medium text-gray-900">{user.name}</span>
                   </div>
 
-                  {/* User Menu Items */}
                   <Link
                     href="/dashboard"
                     className="flex items-center px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors duration-200"
@@ -223,7 +222,7 @@ export function Navbar() {
                   </Link>
                   <Link
                     href="/register"
-                    className="block w-full text-center px-4 py-2 bg-black text-white hover:bg-gray-800 rounded-md transition-colors duration-200"
+                    className="block w-full text-center px-4 py-2 bg-[#B69A2A] text-white hover:bg-[#a68924] rounded-md transition-colors duration-200"
                     onClick={closeMobileMenu}
                   >
                     Register
