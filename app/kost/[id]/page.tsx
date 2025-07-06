@@ -445,13 +445,34 @@ export default function KostDetailPage() {
               </FadeIn>
 
               {/* Map */}
+              {/* Map */}
               <FadeIn delay={0.3}>
                 <Card>
                   <CardHeader>
                     <CardTitle>Lokasi</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <MapComponent latitude={kost.latitude} longitude={kost.longitude} title={kost.title} />
+                    {/* Peta */}
+                    <MapComponent
+                      latitude={kost.latitude}
+                      longitude={kost.longitude}
+                      title={kost.title}
+                    />
+
+                    {/* Tombol Google Maps */}
+                    <div className="mt-4">
+                      <Button asChild variant="outline" className="w-full bg-black text-white">
+                        <a
+                          href={`https://www.google.com/maps?q=${kost.latitude},${kost.longitude}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center"
+                        >
+                          <MapPin className="w-4 h-4 mr-2" />
+                          Buka di Google Maps
+                        </a>
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               </FadeIn>
